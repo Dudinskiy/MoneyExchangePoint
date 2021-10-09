@@ -1,0 +1,13 @@
+package com.example.moneyexchangepoint;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class MoneyExchangePointApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
