@@ -10,7 +10,7 @@ CREATE TABLE exchange_rates
 );
 
 INSERT INTO exchange_rates (ccy, base_ccy, sale, buy, date, time)
-VALUES (null, null, 0, 0, null, null);
+VALUES (null, null, null, null, null, null);
 
 
 CREATE TABLE exchange_request
@@ -30,5 +30,5 @@ CREATE TABLE exchange_request
 
 INSERT INTO exchange_request (user_Name, user_Phone, sale_Money, amount_Sale_Money, buy_Money, amount_Buy_Money,
                               date, time, password, state)
-VALUES (null, null, null, 0,
-        null, 0, null, null, null, null);
+VALUES (null, null, null, null,
+        null, null, null, null, null, null);

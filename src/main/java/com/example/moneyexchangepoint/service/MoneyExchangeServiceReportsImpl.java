@@ -1,5 +1,6 @@
 package com.example.moneyexchangepoint.service;
 
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForPeriod;
 import com.example.moneyexchangepoint.dto.MoneyExchangeReportForDay;
 import com.example.moneyexchangepoint.dto.MoneyExchangeReportForPeriod;
 import com.example.moneyexchangepoint.entity.MoneyExchangeRequest;
@@ -35,9 +36,10 @@ public class MoneyExchangeServiceReportsImpl implements MoneyExchangeServiceRepo
     }
 
     @Override
-    public MoneyExchangeReportForPeriod getReportForPeriod(String money, String firstDate, String lastDate) {
-        ArrayList<MoneyExchangeRequest> arrayRequest = requestRepository.findAllByDateBetweenAndState(firstDate, lastDate, "Выполнена");
+    public MoneyExchangeReportForPeriod getReportForPeriod(InputDataForPeriod inputData) {
+        ArrayList<MoneyExchangeRequest> arrayRequest = requestRepository.findAllByDateBetweenAndState(inputData.getFirstDate(),
+                inputData.getLastDate(), "Выполнена");
 
-        return requestToReport.getReportForPeriod(arrayRequest, money);
+        return requestToReport.getReportForPeriod(arrayRequest, inputData.getMoney());
     }
 }

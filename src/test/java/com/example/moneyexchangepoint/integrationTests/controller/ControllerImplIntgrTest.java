@@ -1,8 +1,11 @@
 package com.example.moneyexchangepoint.integrationTests.controller;
 
-import com.example.moneyexchangepoint.controller.Controller;
-import com.example.moneyexchangepoint.dto.MoneyExchangeReportForDay;
-import com.example.moneyexchangepoint.dto.MoneyExchangeResponse;
+import com.example.moneyexchangepoint.controller.ControllerImpl;
+import com.example.moneyexchangepoint.dto.*;
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForConfirmation;
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForDelete;
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForRates;
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForRequest;
 import com.example.moneyexchangepoint.entity.ExchangeRates;
 import com.example.moneyexchangepoint.entity.MoneyExchangeRequest;
 import com.example.moneyexchangepoint.exception.ValidationException;
@@ -23,12 +26,12 @@ import javax.transaction.Transactional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
-public class ControllerIntgrTest {
+public class ControllerImplIntgrTest {
 
     @Autowired
     MoneyExchangeRequestRepository requestRepository;
     @Autowired
-    Controller controller;
+    ControllerImpl controller;
     @Autowired
     MoneyExchangeServiceWorkImpl serviceWork;
     @Autowired
@@ -41,9 +44,44 @@ public class ControllerIntgrTest {
     DateAndTime date;
 
 
+    public InputDataForRequest getInputDataRequest(String userName, String userPhone,
+                                                   String saleMoney, float saleMoneyAmount, String buyMoney) {
+        InputDataForRequest inputDate = new InputDataForRequest();
+
+        inputDate.setUserName(userName);
+        inputDate.setUserPhone(userPhone);
+        inputDate.setSaleMoney(saleMoney);
+        inputDate.setSaleMoneyAmount(saleMoneyAmount);
+        inputDate.setBuyMoney(buyMoney);
+
+        return inputDate;
+    }
+
+    public InputDataForConfirmation getInputDataConfirmation (MoneyExchangeResponse response){
+        InputDataForConfirmation inputData = new InputDataForConfirmation();
+
+        inputData.setId(response.getId());
+        inputData.setPassword(response.getPassword());
+
+        return inputData;
+    }
+
+    public InputDataForRates getInputDataRates(float buy, float sale){
+        InputDataForRates inputData = new InputDataForRates();
+
+        inputData.setBuyRate(buy);
+        inputData.setSaleRate(sale);
+
+        return inputData;
+    }
+
+
+
+
+
     @Test
     public void getExchangeRatesAndSaveItToDB() {
-        ratesService.saveExchangeRates();
+        ratesService.saveExchangeRates(getInputDataRates(1, 1));
 
         ExchangeRates rates = ratesRepository.findByCcyAndDate("USD", date.getDate());
 
@@ -54,10 +92,10 @@ public class ControllerIntgrTest {
 
     @Test
     public void saveRequestToDBAndGetResponse() throws ValidationException {
-        ratesService.saveExchangeRates();
+        ratesService.saveExchangeRates(getInputDataRates(1, 1));
 
-        MoneyExchangeResponse response = controller.saveExchangeRequest("Alex", "(099) 123-45-67",
-                "UAH", 1000.0f, "USD");
+        MoneyExchangeResponse response = controller.saveExchangeRequest(getInputDataRequest("Alex", "(099) 123-45-67",
+                "UAH", 1000.0f, "USD"));
 
         Assertions.assertEquals(response.getUserPhone(), "(099) 123-45-67");
         Assertions.assertNotNull(response.getPassword());
@@ -76,11 +114,11 @@ public class ControllerIntgrTest {
 
     @Test
     public void confirmationRequestSuccess() throws ValidationException {
-        ratesService.saveExchangeRates();
-        MoneyExchangeResponse response = controller.saveExchangeRequest("Alex", "(099) 123-45-67",
-                "UAH", 1000.0f, "USD");
+        ratesService.saveExchangeRates(getInputDataRates(1, 1));
+        MoneyExchangeResponse response = controller.saveExchangeRequest(getInputDataRequest("Alex", "(099) 123-45-67",
+                "UAH", 1000.0f, "USD"));
 
-        String confResponse = controller.confirmationExchangeRequest(response.getId(), response.getPassword());
+        String confResponse = controller.confirmationExchangeRequest(getInputDataConfirmation(response));
 
         Assertions.assertEquals(confResponse, "Пароль верный");
 
@@ -92,11 +130,15 @@ public class ControllerIntgrTest {
 
     @Test
     public void confirmationRequestFail() throws ValidationException {
-        ratesService.saveExchangeRates();
-        MoneyExchangeResponse response = controller.saveExchangeRequest("Alex", "(099) 123-45-67",
-                "UAH", 1000.0f, "USD");
+        ratesService.saveExchangeRates(getInputDataRates(1, 1));
+        MoneyExchangeResponse response = controller.saveExchangeRequest(getInputDataRequest("Alex", "(099) 123-45-67",
+                "UAH", 1000.0f, "USD"));
 
-        String confResponse = controller.confirmationExchangeRequest(response.getId(), "xxxx");
+        InputDataForConfirmation inputData = new InputDataForConfirmation();
+        inputData.setId(response.getId());
+        inputData.setPassword("xxxx");
+
+        String confResponse = controller.confirmationExchangeRequest(inputData);
 
         Assertions.assertEquals(confResponse, "Пароль неверный");
 
@@ -108,11 +150,13 @@ public class ControllerIntgrTest {
 
     @Test
     public void deleteRequest() throws ValidationException {
-        ratesService.saveExchangeRates();
-        MoneyExchangeResponse response = controller.saveExchangeRequest("Alex", "(050) 123-45-67",
-                "UAH", 1000.0f, "USD");
+        ratesService.saveExchangeRates(getInputDataRates(1, 1));
+        MoneyExchangeResponse response = controller.saveExchangeRequest(getInputDataRequest("Alex", "(050) 123-45-67",
+                "UAH", 1000.0f, "USD"));
 
-        controller.deleteExchangeRequest("(050) 123-45-67");
+        InputDataForDelete inputData = new InputDataForDelete();
+        inputData.setUserPhone("(050) 123-45-67");
+        controller.deleteRequestByPhone(inputData);
 
         Assertions.assertFalse(requestRepository.existsById(response.getId()));
     }
@@ -120,13 +164,13 @@ public class ControllerIntgrTest {
 
     @Test
     public void getReportForCurrentDay() throws ValidationException {
-        ratesService.saveExchangeRates();
-        MoneyExchangeResponse response_1 = controller.saveExchangeRequest("Alex", "(099) 123-45-67",
-                "UAH", 1000.0f, "USD");
-        controller.confirmationExchangeRequest(response_1.getId(), response_1.getPassword());
-        MoneyExchangeResponse response_2 = controller.saveExchangeRequest("Dima", "(050) 123-45-67",
-                "UAH", 1000.0f, "EUR");
-        controller.confirmationExchangeRequest(response_2.getId(), response_2.getPassword());
+        ratesService.saveExchangeRates(getInputDataRates(1, 1));
+        MoneyExchangeResponse response_1 = controller.saveExchangeRequest(getInputDataRequest("Alex", "(099) 123-45-67",
+                "UAH", 1000.0f, "USD"));
+        controller.confirmationExchangeRequest(getInputDataConfirmation(response_1));
+        MoneyExchangeResponse response_2 = controller.saveExchangeRequest(getInputDataRequest("Dima", "(050) 123-45-67",
+                "UAH", 1000.0f, "EUR"));
+        controller.confirmationExchangeRequest(getInputDataConfirmation(response_2));
 
 
         MoneyExchangeReportForDay report = controller.finishWork();

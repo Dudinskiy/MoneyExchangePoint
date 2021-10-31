@@ -1,5 +1,6 @@
 package com.example.moneyexchangepoint.service;
 
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForRates;
 import com.example.moneyexchangepoint.entity.ExchangeRates;
 import com.example.moneyexchangepoint.repository.ExchangeRatesRepository;
 import com.example.moneyexchangepoint.service.util.GetExchangeRates;
@@ -23,8 +24,8 @@ public class ExchangeRatesServiceImpl implements ExchangeRatesService {
     }
 
     @Override
-    public List<ExchangeRates> saveExchangeRates() {
-        ArrayList<ExchangeRates> ratesArrayList = rates.getExchangeRates();
+    public List<ExchangeRates> saveExchangeRates(InputDataForRates inputData) {
+        ArrayList<ExchangeRates> ratesArrayList = rates.getExchangeRates(inputData);
         return ratesRepository.saveAll(ratesArrayList);
     }
 

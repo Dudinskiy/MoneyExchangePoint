@@ -8,10 +8,13 @@ public class MoneyExchangeResponse {
 
     @Schema(description = "Идентификатор заявки")
     private Integer id;
+
     @Schema(description = "Номер мобильного телефона клиента", example = "(050) 123-45-67")
     private String userPhone;
+
     @Schema(description = "Сумма покупаемой клиентом валюты")
     private float buyMoneyAmount;
+
     @Schema(description = "ОТП-пароль (четырехзначное число)", example = "2209")
     private String password;
 

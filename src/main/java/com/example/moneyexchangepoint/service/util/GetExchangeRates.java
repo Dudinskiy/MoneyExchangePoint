@@ -1,9 +1,11 @@
 package com.example.moneyexchangepoint.service.util;
 
 import com.example.moneyexchangepoint.dto.ExchangeRatesFromJSON;
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForRates;
 import com.example.moneyexchangepoint.entity.ExchangeRates;
 import com.example.moneyexchangepoint.service.util.DateAndTime;
 import com.google.gson.Gson;
+import jdk.nashorn.api.scripting.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +19,7 @@ import java.util.Arrays;
 
 @Component
 public class GetExchangeRates {
-    private static float setOwnBuyRate = 1.0f;
-    private static float setOwnSaleRate = 1.0f;
+
     private String urlAPI = "https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5";
 
     DateAndTime date;
@@ -51,6 +52,7 @@ public class GetExchangeRates {
         }
     }
 
+
     public ArrayList<ExchangeRatesFromJSON> getArrayListFromJSON() {
         String json = getJSON(urlAPI);
         Gson gson = new Gson();
@@ -59,7 +61,7 @@ public class GetExchangeRates {
         return new ArrayList<>(Arrays.asList(fromJSON));
     }
 
-    public ArrayList<ExchangeRates> getExchangeRates() {
+    public ArrayList<ExchangeRates> getExchangeRates(InputDataForRates inputData) {
         ArrayList<ExchangeRatesFromJSON> arrayList = getArrayListFromJSON();
         ArrayList<ExchangeRates> ratesArrayList = new ArrayList<>();
         String currentDate = date.getDate();
@@ -70,8 +72,8 @@ public class GetExchangeRates {
 
             rates.setCcy(ratesJSON.getCcy());
             rates.setBase_ccy(ratesJSON.getBase_ccy());
-            rates.setBuy(Float.parseFloat(ratesJSON.getBuy()) * setOwnBuyRate);
-            rates.setSale(Float.parseFloat(ratesJSON.getSale()) * setOwnSaleRate);
+            rates.setBuy(Float.parseFloat(ratesJSON.getBuy()) * inputData.getBuyRate());
+            rates.setSale(Float.parseFloat(ratesJSON.getSale()) * inputData.getSaleRate());
             rates.setDate(currentDate);
             rates.setTime(time);
 

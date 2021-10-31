@@ -1,5 +1,8 @@
 package com.example.moneyexchangepoint.service;
 
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForConfirmation;
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForDelete;
+import com.example.moneyexchangepoint.dto.inputdata.InputDataForRequest;
 import com.example.moneyexchangepoint.dto.MoneyExchangeResponse;
 import com.example.moneyexchangepoint.entity.ExchangeRates;
 import com.example.moneyexchangepoint.entity.MoneyExchangeRequest;
@@ -37,19 +40,19 @@ public class MoneyExchangeServiceWorkImpl implements MoneyExchangeServiceWork {
 
 
     @Override
-    public MoneyExchangeResponse saveMoneyExchangeRequest(String userName, String userPhone, String saleMoney,
-                                                          float saleMoneyAmount, String buyMoney) throws ValidationException {
+    public MoneyExchangeResponse saveMoneyExchangeRequest(InputDataForRequest inputData) throws ValidationException {
 
-        validator.validateExchangeRequest(userPhone, saleMoney, saleMoneyAmount, buyMoney);
+        validator.validateExchangeRequest(inputData.getUserPhone(), inputData.getSaleMoney(),
+                inputData.getSaleMoneyAmount(), inputData.getBuyMoney());
 
         MoneyExchangeRequest request = new MoneyExchangeRequest();
 
-        request.setUserName(userName);
-        request.setUserPhone(userPhone);
-        request.setSaleMoney(saleMoney);
-        request.setAmountSaleMoney(saleMoneyAmount);
-        request.setBuyMoney(buyMoney);
-        request.setAmountBuyMoney(buyMoneyAmount(saleMoney, saleMoneyAmount, buyMoney));
+        request.setUserName(inputData.getUserName());
+        request.setUserPhone(inputData.getUserPhone());
+        request.setSaleMoney(inputData.getSaleMoney());
+        request.setAmountSaleMoney(inputData.getSaleMoneyAmount());
+        request.setBuyMoney(inputData.getBuyMoney());
+        request.setAmountBuyMoney(buyMoneyAmount(inputData.getSaleMoney(), inputData.getSaleMoneyAmount(), inputData.getBuyMoney()));
         request.setDate(date.getDate());
         request.setTime(date.getTime());
         request.setPassword(password.getPassword());
@@ -68,16 +71,21 @@ public class MoneyExchangeServiceWorkImpl implements MoneyExchangeServiceWork {
     }
 
     @Override
-    public void deleteMoneyExchangeRequest(String userPhone) {
-        ArrayList<MoneyExchangeRequest> requestArrayList = requestRepository.findAllByUserPhoneAndState(userPhone, "Новая");
+    public void deleteExchangeRequestByPhone(InputDataForDelete inputData) {
+        ArrayList<MoneyExchangeRequest> requestArrayList = requestRepository.findAllByUserPhoneAndState(inputData.getUserPhone(), "Новая");
         requestRepository.deleteAll(requestArrayList);
     }
 
     @Override
-    public String confirmationExchange(Integer id, String password) {
+    public void deleteExchangeRequestById(Integer id) {
+        requestRepository.deleteById(id);
+    }
+
+    @Override
+    public String confirmationExchange(InputDataForConfirmation inputData) {
         String response;
-        MoneyExchangeRequest request = requestRepository.getById(id);
-        if (password.equals(request.getPassword())) {
+        MoneyExchangeRequest request = requestRepository.getById(inputData.getId());
+        if (inputData.getPassword().equals(request.getPassword())) {
             response = "Пароль верный";
             request.setState("Выполнена");
             request.setTime(date.getTime());
