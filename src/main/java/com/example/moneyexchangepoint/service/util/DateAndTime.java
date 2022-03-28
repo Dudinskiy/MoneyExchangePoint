@@ -9,12 +9,12 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class DateAndTime {
 
-    public String getDate(){
+    public String getDate() {
         LocalDate date = LocalDate.now();
         return date.format(DateTimeFormatter.ofPattern("u-MM-dd"));
     }
 
-    public String getTime(){
+    public String getTime() {
         LocalTime time = LocalTime.now();
         return time.format(DateTimeFormatter.ofPattern("HH:mm"));
     }

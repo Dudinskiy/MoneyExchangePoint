@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.ArrayList;
 
+
 public interface MoneyExchangeRequestRepository extends JpaRepository<MoneyExchangeRequest, Integer> {
 
     ArrayList<MoneyExchangeRequest> findAllByUserPhoneAndState(String userPhone, String state);

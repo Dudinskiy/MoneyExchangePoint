@@ -57,7 +57,7 @@ public class ControllerImplIntgrTest {
         return inputDate;
     }
 
-    public InputDataForConfirmation getInputDataConfirmation (MoneyExchangeResponse response){
+    public InputDataForConfirmation getInputDataConfirmation(MoneyExchangeResponse response) {
         InputDataForConfirmation inputData = new InputDataForConfirmation();
 
         inputData.setId(response.getId());
@@ -66,7 +66,7 @@ public class ControllerImplIntgrTest {
         return inputData;
     }
 
-    public InputDataForRates getInputDataRates(float buy, float sale){
+    public InputDataForRates getInputDataRates(float buy, float sale) {
         InputDataForRates inputData = new InputDataForRates();
 
         inputData.setBuyRate(buy);
@@ -74,9 +74,6 @@ public class ControllerImplIntgrTest {
 
         return inputData;
     }
-
-
-
 
 
     @Test
@@ -107,7 +104,7 @@ public class ControllerImplIntgrTest {
         Assertions.assertEquals(savedRequest.getUserName(), "Alex");
         Assertions.assertEquals(savedRequest.getUserPhone(), "(099) 123-45-67");
         Assertions.assertEquals(savedRequest.getSaleMoney(), "UAH");
-        Assertions.assertEquals(savedRequest.getAmountSaleMoney(), 1000.0f);
+        Assertions.assertEquals(savedRequest.getSaleMoneyAmount(), 1000.0f);
         Assertions.assertEquals(savedRequest.getBuyMoney(), "USD");
     }
 

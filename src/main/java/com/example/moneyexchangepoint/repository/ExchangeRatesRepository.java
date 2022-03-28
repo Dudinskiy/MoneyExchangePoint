@@ -7,8 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ExchangeRatesRepository extends JpaRepository<ExchangeRates, String> {
 
-    ExchangeRates findByCcyAndDate (String ccy, String date);
-
+    ExchangeRates findByCcyAndDate(String ccy, String date);
 
 
 }

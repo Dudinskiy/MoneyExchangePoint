@@ -30,9 +30,9 @@ public class ConverterExchangeRequestToReportTest {
         MoneyExchangeRequest request = new MoneyExchangeRequest();
 
         request.setSaleMoney(saleMoney);
-        request.setAmountSaleMoney(amountSaleMoney);
+        request.setSaleMoneyAmount(amountSaleMoney);
         request.setBuyMoney(buyMoney);
-        request.setAmountBuyMoney(amountBuyMoney);
+        request.setBuyMoneyAmount(amountBuyMoney);
 
         return request;
     }

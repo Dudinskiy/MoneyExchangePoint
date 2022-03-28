@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -66,7 +67,7 @@ public class ControllerImpl implements Controller {
     }
 
     @Override
-    @GetMapping("/finish")
+    @GetMapping(value = "/finish")
     public MoneyExchangeReportForDay finishWork() {
         return serviceReports.getReportForCurrentDay();
     }
@@ -75,5 +76,10 @@ public class ControllerImpl implements Controller {
     @GetMapping("/reportForPeriod")
     public MoneyExchangeReportForPeriod getReportForPeriod(@RequestBody InputDataForPeriod inputData) {
         return serviceReports.getReportForPeriod(inputData);
+    }
+
+    @GetMapping("/home")
+    public String home(){
+        return "home";
     }
 }

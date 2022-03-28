@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Пункт обмены валюты</title>
+    <style>
+        body {
+            font-family: arial, sans-serif;
+            background-color: aliceblue;
+
+        }
+
+        header {
+            background-color: lightslategrey;
+            margin-top: 0pt;
+
+        }
+
+        header h1, h2, form {
+            padding-top: 5pt;
+            padding-left: 15pt;
+
+        }
+
+        .pos1 {
+            height: 80pt;
+            margin: 0px;
+            color: ghostwhite;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 50%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+        footer {
+            flex: 0 0 auto;
+            height: 80pt;
+            background-color: lightslategrey;
+            color: #dddddd;
+            text-align: right;
+            padding-top: 0pt;
+        }
+        footer p{
+            padding-top: 60pt;
+            padding-right: 15pt;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="pos1">
+        <h1>Пункт обмена валют</h1>
+        <h2>Онлайн-сервис</h2>
+    </div>
+</header>
+
+<h2>Оформление заявки на обмен валюты</h2>
+<form onsubmit="return false;">
+    <label for="user_name">Ваше имя:</label>
+    <input name="user_name" id="user_name" placeholder="User name" required>
+    <label for="user_phone">Номер телефона:</label>
+    <input name="user_phone" id="user_phone" placeholder="User phone" required>
+    <label for="sale_money">Валюта продажи:</label>
+    <input name="sale_money" id="sale_money" placeholder="Sale money" required>
+    <label for="sale_money_amount">Сумма продажи:</label>
+    <input name="sale_money_amount" id="sale_money_amount" placeholder="Sale money amount" required>
+    <label for="buy_money">Валюта покупки:</label>
+    <input name="buy_money" id="buy_money" placeholder="Buy money" required>
+    <button onclick="saveMoneyExchangeRequest()">Отправить завку</button>
+</form>
+
+<h2>Заявка на обмен валюты</h2>
+<table id="exchangeRequest"></table>
+
+<h2>Подтверждение заявки</h2>
+<form onsubmit="return false;">
+    <label for="exchange_request_id">Номер заявки:</label>
+    <input name="exchange_request_id" id="exchange_request_id" placeholder="Номер заявки">
+    <label for="password">Пароль:</label>
+    <input name="password" id="password" placeholder="Пароль">
+    <button onclick="confirmationExchangeRequest()">Подтвердить заявку</button>
+</form>
+
+
+<h2>Установка обменного курса валют</h2>
+<form onsubmit="return false;">
+    <label for="buy_rate">Коэффициент для курса покупки:</label>
+    <input name="buy_rate" id="buy_rate" required>
+    <label for="sale_rate">Коэффициент для курса продажи:</label>
+    <input name="sale_rate" id="sale_rate" required>
+    <button onclick="startWork()">Установить курс</button>
+</form>
+
+<h2>Отчет за текущий день</h2>
+<table id="reportForDay"></table>
+<button onclick="finishWork()">Получить отчет за день</button>
+
+<script>
+
+    function deleteUser(userId) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("DELETE", "http://localhost:8080/users/delete/" + userId, true);
+        xhttp.send();
+    }
+
+    function saveMoneyExchangeRequest() {
+        let userName = document.getElementById("user_name").value;
+        let userPhone = document.getElementById("user_phone").value;
+        let saleMoney = document.getElementById("sale_money").value;
+        let saleMoneyAmount = document.getElementById("sale_money_amount").value;
+        let buyMoney = document.getElementById("buy_money").value;
+
+        let xhttp = new XMLHttpRequest();   // new HttpRequest instance
+        xhttp.onload = function () {
+            if (xhttp.status == 200) {
+                let exchangeRequests = JSON.parse(xhttp.response);
+                let html = '<tr>\n' +
+                    '        <th>Номер заявки</th>\n' +
+                    '        <th>Телефон клиента</th>\n' +
+                    '        <th>Сумма покупки валюты</th>\n' +
+                    '        <th>Пароль</th>\n' +
+                    '        <th>Удалить заявку</th>\n' +
+                    '    </tr>';
+                console.log(exchangeRequests);
+                html = html + '<tr><td>' + exchangeRequests.id + '</td>\n' +
+                    '        <td>' + exchangeRequests.userPhone + '</td>\n' +
+                    '        <td>' + exchangeRequests.buyMoneyAmount + '</td>\n' +
+                    '        <td>' + exchangeRequests.password + '</td>\n' +
+                    '        <td><button onclick="deleteUser(' + exchangeRequests.id + ')">Delete</button></td></tr>';
+
+                document.getElementById("exchangeRequest").innerHTML = html;
+            }
+            return false;
+        };
+        xhttp.open("POST", "http://localhost:8080/exchange/saveRequest", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(JSON.stringify({
+            userName: userName, userPhone: userPhone, saleMoney: saleMoney,
+            saleMoneyAmount: saleMoneyAmount, buyMoney: buyMoney
+        }));
+    }
+
+    function finishWork() {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onload = function () {
+            if (xhttp.status == 200) {
+                let moneyExchangeReportForDay = JSON.parse(xhttp.response);
+                let html = '<tr>\n' +
+                    '        <th>Количество заявок</th>\n' +
+                    '        <th>Куплено гривны</th>\n' +
+                    '        <th>Продано гривны</th>\n' +
+                    '        <th>Куплено доллара</th>\n' +
+                    '        <th>Продано доллара</th>\n' +
+                    '        <th>Куплено евро</th>\n' +
+                    '        <th>Продано евро</th>\n' +
+                    '        <th>Куплено рубля</th>\n' +
+                    '        <th>Продано рубля</th>\n' +
+                    '    </tr>';
+                console.log(moneyExchangeReportForDay);
+                html = html + '<tr><td>' + moneyExchangeReportForDay.amountRequest + '</td>\n' +
+                    '        <td>' + moneyExchangeReportForDay.buyUAH + '</td>\n' +
+                    '        <td>' + moneyExchangeReportForDay.saleUAH + '</td>\n' +
+                    '        <td>' + moneyExchangeReportForDay.buyUSD + '</td>\n' +
+                    '        <td>' + moneyExchangeReportForDay.saleUSD + '</td>\n' +
+                    '        <td>' + moneyExchangeReportForDay.buyEUR + '</td>\n' +
+                    '        <td>' + moneyExchangeReportForDay.saleEUR + '</td>\n' +
+                    '        <td>' + moneyExchangeReportForDay.buyRUR + '</td>\n' +
+                    '        <td>' + moneyExchangeReportForDay.saleRUR + '</td></tr>';
+
+                document.getElementById("reportForDay").innerHTML = html;
+            }
+        };
+        xhttp.open("GET", "http://localhost:8080/exchange/finish", true);
+        xhttp.send();
+    }
+
+    function startWork() {
+        let buyRate = document.getElementById("buy_rate").value;
+        let saleRate = document.getElementById("sale_rate").value;
+
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:8080/exchange/start", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(JSON.stringify({buyRate: buyRate, saleRate: saleRate}));
+    }
+
+    function confirmationExchangeRequest() {
+        let id = document.getElementById("exchange_request_id").value;
+        let password = document.getElementById("password").value;
+
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:8080/exchange/confirmation", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(JSON.stringify({id: id, password: password}));
+    }
+
+    function initialTableExchangeRequest() {
+        let html = '<tr>\n' +
+            '        <th>Номер заявки</th>\n' +
+            '        <th>Телефон клиента</th>\n' +
+            '        <th>Сумма покупки валюты</th>\n' +
+            '        <th>Пароль</th>\n' +
+            '        <th>Удалить заявку</th>\n' +
+            '    </tr>';
+        document.getElementById("exchangeRequest").innerHTML = html;
+    }
+
+    function initialTableReportForDay() {
+        document.getElementById("reportForDay").innerHTML = '<tr>\n' +
+            '        <th>Количество заявок</th>\n' +
+            '        <th>Куплено гривны</th>\n' +
+            '        <th>Продано гривны</th>\n' +
+            '        <th>Куплено доллара</th>\n' +
+            '        <th>Продано доллара</th>\n' +
+            '        <th>Куплено евро</th>\n' +
+            '        <th>Продано евро</th>\n' +
+            '        <th>Куплено рубля</th>\n' +
+            '        <th>Продано рубля</th>\n' +
+            '    </tr>' +
+            '<tr>\n' +
+            '        <th>0</th>\n' +
+            '        <th> </th>\n' +
+            '        <th> </th>\n' +
+            '        <th> </th>\n' +
+            '        <th> </th>\n' +
+            '        <th> </th>\n' +
+            '        <th> </th>\n' +
+            '        <th> </th>\n' +
+            '        <th> </th>\n' +
+            '    </tr>';
+    }
+
+
+    initialTableExchangeRequest();
+    initialTableReportForDay();
+
+</script>
+<footer>
+    <div>
+        <p>&copy; Александр Дудинский, 2022</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -21,13 +21,13 @@ public class MoneyExchangeRequest {
     private String saleMoney;
 
     @Column
-    private float amountSaleMoney;
+    private float saleMoneyAmount;
 
     @Column
     private String buyMoney;
 
     @Column
-    private float amountBuyMoney;
+    private float buyMoneyAmount;
 
     @Column
     private String date;
@@ -77,12 +77,12 @@ public class MoneyExchangeRequest {
         this.saleMoney = saleMoney;
     }
 
-    public float getAmountSaleMoney() {
-        return amountSaleMoney;
+    public float getSaleMoneyAmount() {
+        return saleMoneyAmount;
     }
 
-    public void setAmountSaleMoney(float amountSaleMoney) {
-        this.amountSaleMoney = amountSaleMoney;
+    public void setSaleMoneyAmount(float amountSaleMoney) {
+        this.saleMoneyAmount = amountSaleMoney;
     }
 
     public String getBuyMoney() {
@@ -93,12 +93,12 @@ public class MoneyExchangeRequest {
         this.buyMoney = buyMoney;
     }
 
-    public float getAmountBuyMoney() {
-        return amountBuyMoney;
+    public float getBuyMoneyAmount() {
+        return buyMoneyAmount;
     }
 
-    public void setAmountBuyMoney(float amountBuyMoney) {
-        this.amountBuyMoney = amountBuyMoney;
+    public void setBuyMoneyAmount(float amountBuyMoney) {
+        this.buyMoneyAmount = amountBuyMoney;
     }
 
     public String getDate() {

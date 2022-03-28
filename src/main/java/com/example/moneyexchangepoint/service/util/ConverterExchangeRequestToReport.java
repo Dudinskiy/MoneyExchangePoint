@@ -28,7 +28,7 @@ public class ConverterExchangeRequestToReport {
         float buyMoney = 0;
         for (MoneyExchangeRequest request : arrayRequest) {
             if (money.equals(request.getSaleMoney())) {
-                buyMoney = buyMoney + request.getAmountSaleMoney();
+                buyMoney = buyMoney + request.getSaleMoneyAmount();
             }
         }
         return buyMoney;
@@ -38,7 +38,7 @@ public class ConverterExchangeRequestToReport {
         float saleMoney = 0;
         for (MoneyExchangeRequest request : arrayRequest) {
             if (money.equals(request.getBuyMoney())) {
-                saleMoney = saleMoney + request.getAmountBuyMoney();
+                saleMoney = saleMoney + request.getBuyMoneyAmount();
             }
         }
         return saleMoney;

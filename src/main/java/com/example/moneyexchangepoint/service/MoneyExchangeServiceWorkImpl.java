@@ -50,9 +50,9 @@ public class MoneyExchangeServiceWorkImpl implements MoneyExchangeServiceWork {
         request.setUserName(inputData.getUserName());
         request.setUserPhone(inputData.getUserPhone());
         request.setSaleMoney(inputData.getSaleMoney());
-        request.setAmountSaleMoney(inputData.getSaleMoneyAmount());
+        request.setSaleMoneyAmount(inputData.getSaleMoneyAmount());
         request.setBuyMoney(inputData.getBuyMoney());
-        request.setAmountBuyMoney(buyMoneyAmount(inputData.getSaleMoney(), inputData.getSaleMoneyAmount(), inputData.getBuyMoney()));
+        request.setBuyMoneyAmount(buyMoneyAmount(inputData.getSaleMoney(), inputData.getSaleMoneyAmount(), inputData.getBuyMoney()));
         request.setDate(date.getDate());
         request.setTime(date.getTime());
         request.setPassword(password.getPassword());
@@ -64,7 +64,7 @@ public class MoneyExchangeServiceWorkImpl implements MoneyExchangeServiceWork {
 
         response.setId(requestSaved.getId());
         response.setUserPhone(requestSaved.getUserPhone());
-        response.setBuyMoneyAmount(requestSaved.getAmountBuyMoney());
+        response.setBuyMoneyAmount(requestSaved.getBuyMoneyAmount());
         response.setPassword(requestSaved.getPassword());
 
         return response;
